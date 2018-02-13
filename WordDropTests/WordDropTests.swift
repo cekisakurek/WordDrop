@@ -19,32 +19,34 @@ class WordDropTests: XCTestCase, GameEngineDelegate {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         self.engine = GameEngineController()
         self.engine?.delegate = self
-
     }
 
     func newRound(withDropWord: Word, targetWord: Word, engine: GameEngineController) {
         print("New round started with Drop word:\(withDropWord) target word:\(targetWord)")
+        let deadlineTime = DispatchTime.now() + .microseconds(1)
+        DispatchQueue.main.asyncAfter(deadline: deadlineTime)  { [unowned self] in
+            self.decide()
+        }
+    }
+
+    func decide() {
         let decision = Int(arc4random_uniform(UInt32(2)))
-        if decision < 0 {
+        if decision > 0 {
             self.engine?.userDecided(decision: .Equal)
         }
         else {
             self.engine?.userDecided(decision: .NotEqual)
         }
-        // simulate missed
     }
 
     func selected(decision: UserDecision, targetWord: Word, dropWord: Word, correct: Bool, engine: GameEngineController) {
         print("Selected :\(decision) target word:\(targetWord) drop word:\(dropWord) correct:\(correct)")
-
     }
-
 
     func gameEnded(engine: GameEngineController) {
         print("Game ended with score :\(engine.score)")
         self.gameEndExpectation.fulfill()
     }
-
 
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
@@ -65,5 +67,4 @@ class WordDropTests: XCTestCase, GameEngineDelegate {
             XCTAssert(false,"Words file couldn't loaded")
         }
     }
-
 }

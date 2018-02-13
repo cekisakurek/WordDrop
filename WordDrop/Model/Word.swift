@@ -12,6 +12,7 @@ struct Words: Decodable {
     var person: [Word]
 }
 struct Word : Decodable, Hashable, Equatable {
+
     var text_eng: String
     var text_spa: String
 

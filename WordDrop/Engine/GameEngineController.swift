@@ -15,6 +15,7 @@ enum UserDecision {
 }
 
 protocol GameEngineDelegate: class {
+
     func newRound(withDropWord: Word, targetWord: Word, engine:GameEngineController)
 
     func selected(decision :UserDecision, targetWord: Word, dropWord: Word, correct: Bool, engine:GameEngineController)
@@ -39,10 +40,10 @@ class GameEngineController : NSObject {
     override init() {
 
         super.init()
-
     }
 
     func randomIndex(maxBound: Int) -> Int {
+
         return Int(arc4random_uniform(UInt32(maxBound)))
 
     }
@@ -56,6 +57,7 @@ class GameEngineController : NSObject {
     }
 
     func startGame(withWordURL wordsURL: URL) {
+
         do {
             let data = try Data(contentsOf: wordsURL)
             let decoder = JSONDecoder()
@@ -69,12 +71,14 @@ class GameEngineController : NSObject {
             self.roundTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(tick), userInfo: nil, repeats: true)
             dropWord()
 
-        } catch {
+        }
+        catch {
             print("Words file couldn't parsed with error:\(error)")
         }
     }
 
     func dropWord() {
+
         if self.words!.count == 0 {
             print("Out of words")
             endGame()
@@ -127,26 +131,28 @@ class GameEngineController : NSObject {
     }
 
     private func updateAnswers() {
+
         self.answers = [["target":self.currentTargetWord!], ["selected":self.currentTargetWord!]]
     }
 
     private func correctAnswer(decision: UserDecision) {
+
         self.score = self.score+1
         updateAnswers()
         self.delegate?.selected(decision: decision, targetWord: self.currentTargetWord! ,dropWord: self.currentDropWord!, correct: true, engine: self)
         dropWord()
     }
     private func wrongAnswer(decision: UserDecision) {
+
         updateAnswers()
         self.delegate?.selected(decision: decision, targetWord: self.currentTargetWord! ,dropWord: self.currentDropWord!, correct: false, engine: self)
         dropWord()
     }
 
     func endGame() {
+
         self.roundTimer?.invalidate()
         self.gameStarted = false
         self.delegate?.gameEnded(engine: self)
     }
-
-
 }

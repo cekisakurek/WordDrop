@@ -9,7 +9,9 @@
 import XCTest
 
 class WordDropUITests: XCTestCase {
-        
+
+    private var gameEndExpectation : XCTestExpectation = XCTestExpectation(description: "Game End Expectation")
+
     override func setUp() {
         super.setUp()
         
@@ -28,9 +30,42 @@ class WordDropUITests: XCTestCase {
         super.tearDown()
     }
     
-//    func testExample() {
-//        // Use recording to get started writing UI tests.
-//        // Use XCTAssert and related functions to verify your tests produce the correct results.
-//    }
-    
+    func testGameUI() {
+
+        let app = XCUIApplication()
+        var node = app.buttons["Drop"]
+
+        let handler = { [unowned self] (notification: Notification) -> Void  in
+            self.gameEndExpectation.fulfill()
+        }
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "EndGame"), object: nil, queue: nil, using: handler)
+
+        node.swipeLeft()
+        while(waitForDropToAppear(node)) {
+            sleep(1) // wait for next copy
+            node = app.buttons["Drop"]
+            let decision = Int(arc4random_uniform(UInt32(2)))
+            print(decision)
+            if decision > 0 {
+                node.swipeRight()
+            }
+            else {
+                node.swipeLeft()
+            }
+        }
+        // end test
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "EndGame"), object: nil, userInfo: ["amount": 50])
+    }
+
+    func waitForDropToAppear(_ element: XCUIElement) -> Bool {
+        let predicate = NSPredicate(format: "exists == true")
+
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: element)
+
+        let result = XCTWaiter().wait(for: [expectation], timeout: 10)
+        return result == .completed
+    }
+
+
 }
