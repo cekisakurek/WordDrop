@@ -11,9 +11,17 @@ import Foundation
 struct Words: Decodable {
     var person: [Word]
 }
-struct Word : Decodable {
+struct Word : Decodable, Hashable, Equatable {
     var text_eng: String
     var text_spa: String
+
+    static func == (lhs: Word, rhs: Word) -> Bool {
+        return lhs.text_eng == rhs.text_eng &&
+            lhs.text_spa == rhs.text_spa
+    }
+    var hashValue: Int {
+        return text_eng.hashValue ^ text_spa.hashValue
+    }
 }
 // TODO : Async loading. Remote URL loading
 func loadJson(filename fileName: String) -> [Word]? {
