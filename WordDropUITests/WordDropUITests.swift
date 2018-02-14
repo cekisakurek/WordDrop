@@ -41,9 +41,11 @@ class WordDropUITests: XCTestCase {
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "EndGame"), object: nil, queue: nil, using: handler)
 
-        node.swipeLeft()
+        app.buttons["StartNode"].tap() // start game
+
+
         while(waitForDropToAppear(node)) {
-            sleep(1) // wait for next copy
+
             node = app.buttons["Drop"]
             let decision = Int(arc4random_uniform(UInt32(2)))
             print(decision)
@@ -53,6 +55,7 @@ class WordDropUITests: XCTestCase {
             else {
                 node.swipeLeft()
             }
+            sleep(1) // wait a bit for next round. Sometimes XCTWaiter has trouble copying node from main app.
         }
         // end test
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "EndGame"), object: nil, userInfo: ["amount": 50])

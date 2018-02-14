@@ -10,7 +10,8 @@ import Foundation
 import SpriteKit
 
 protocol GameStartDelegate: class {
-    
+
+    func willStart()
     func startGame()
 }
 
@@ -19,22 +20,24 @@ class CountDownNode : SKLabelNode {
     weak var delegate: GameStartDelegate?
 
     override init() {
+
         super.init()
     }
 
     required init?(coder aDecoder: NSCoder) {
+
         fatalError("init(coder:) has not been implemented")
     }
 
     convenience init(position: CGPoint) {
 
         self.init()
-        self.position = position
 
+        self.position = position
         self.numberOfLines = 2
         self.horizontalAlignmentMode = .left
         self.colorBlendFactor = 0.0;
-        self.text = NSLocalizedString("Tap to Start!", comment: "Tap to start")
+        self.text = NSLocalizedString("Tap here to Start!", comment: "Tap to start")
         self.fontName = "Helvetica-Bold"
         self.fontSize = 38
         self.fontColor = UIColor.white
@@ -63,7 +66,7 @@ class CountDownNode : SKLabelNode {
 
     func reset() {
 
-        self.text = NSLocalizedString("Tap to Start", comment: "Tap to start")
+        self.text = NSLocalizedString("Tap here to Start", comment: "Tap to start")
         self.fontSize = 40
         self.fontColor = UIColor.white
         self.setScale(1.0)
@@ -71,6 +74,7 @@ class CountDownNode : SKLabelNode {
 
     func startCountDown() {
 
+        self.delegate?.willStart()
         let duration = 0.25
 
         self.text = "3"
@@ -94,6 +98,5 @@ class CountDownNode : SKLabelNode {
                        scaleDownAction,removeCountDownLabelAndNotifyDelegateAction]
 
         self.run(SKAction.sequence(actions))
-
     }
 }

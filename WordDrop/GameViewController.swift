@@ -10,14 +10,15 @@ import UIKit
 import SpriteKit
 import GameplayKit
 
-class GameViewController: UIViewController {
+class GameViewController: UIViewController, GameSettingsDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         if let view = self.view as! SKView? {
-            // Load the SKScene from 'GameScene.sks'
+
             let scene = GameScene(size: view.bounds.size)
+            scene.helpDelegate = self
             // Set the scale mode to scale to fit the window
             scene.scaleMode = .aspectFill
 
@@ -29,6 +30,12 @@ class GameViewController: UIViewController {
 //            view.showsFPS = true
 //            view.showsNodeCount = true
         }
+    }
+
+    func showHelp() {
+        let helpViewController = HelpViewController()
+        let helpNavigationController = UINavigationController(rootViewController: helpViewController)
+        self.present(helpNavigationController, animated: true, completion: nil)
     }
 
     override var shouldAutorotate: Bool {
