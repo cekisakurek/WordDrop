@@ -11,13 +11,16 @@ import SpriteKit
 
 class BucketNode : SKShapeNode {
 
-    private var wordLabel: SKLabelNode?
+    private var wordLabel: SKLabelNode!
     public var text: String?
+
     override init() {
+
         super.init()
     }
 
     required init?(coder aDecoder: NSCoder) {
+
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -31,33 +34,32 @@ class BucketNode : SKShapeNode {
         self.lineCap = .round
         self.lineJoin = .round
         self.lineWidth = 2.0
+        self.fillColor = UIColor.white
 
         self.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: side, height: side))
         self.physicsBody?.affectedByGravity = false
         self.physicsBody?.isDynamic = false
-        self.fillColor = UIColor.white
 
-        let wordLabel = SKLabelNode(text: "")
-        wordLabel.position = CGPoint(x:0,y:0)
-        wordLabel.fontName = "Helvetica-Bold"
-        wordLabel.fontSize = 58
-        wordLabel.fontColor = UIColor.black
-        wordLabel.horizontalAlignmentMode = .center
-        wordLabel.verticalAlignmentMode = .center
-        wordLabel.text = self.text
-        self.addChild(wordLabel)
-        self.wordLabel = wordLabel
+        self.wordLabel = SKLabelNode(text: "")
+        self.wordLabel.position = CGPoint(x:0,y:0)
+        self.wordLabel.fontName = "Helvetica-Bold"
+        self.wordLabel.fontSize = 58
+        self.wordLabel.fontColor = UIColor.black
+        self.wordLabel.horizontalAlignmentMode = .center
+        self.wordLabel.verticalAlignmentMode = .center
+        self.wordLabel.text = self.text
+        self.addChild(self.wordLabel)
     }
 
     public func animateDecision(correct:Bool) {
 
-        wordLabel?.setScale(0.5)
+        wordLabel.setScale(0.5)
         let scaleUpAction = SKAction.scale(to: 1.0, duration: 0.25)
         if correct {
-            wordLabel?.text = "✅"
+            wordLabel.text = "✅"
         }
         else {
-            wordLabel?.text = "❌"
+            wordLabel.text = "❌"
         }
 
         let clearAction = SKAction.customAction(withDuration: 0.0, actionBlock: { [unowned self]
@@ -66,7 +68,7 @@ class BucketNode : SKShapeNode {
             label.text = self.text
         })
 
-        wordLabel?.run(SKAction.sequence([scaleUpAction,clearAction]))
+        wordLabel.run(SKAction.sequence([scaleUpAction,clearAction]))
     }
 
     class private func bucketPathWithCenter(width: CGFloat) -> CGPath {

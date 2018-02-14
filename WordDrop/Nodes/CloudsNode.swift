@@ -15,11 +15,13 @@ class CloudsNode : SKShapeNode {
     private var maxCloudsCount = 15
 
     override init() {
+
         super.init()
         self.lineWidth = 0
     }
 
     required init?(coder aDecoder: NSCoder) {
+        
         fatalError("init(coder:) has not been implemented")
     }
 

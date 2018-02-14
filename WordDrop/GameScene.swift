@@ -166,13 +166,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GameEngineDelegate, GameStar
 
         self.engine = GameEngineController()
         self.engine.delegate = self
-
-
     }
 
     func willStart() {
+
         self.helpButtonNode.isHidden = true
     }
+
     func startGame() {
 
         self.countDownNode.isHidden = true
@@ -285,7 +285,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GameEngineDelegate, GameStar
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
 
-
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -319,12 +318,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GameEngineDelegate, GameStar
         }
     }
 
-    
     override func update(_ currentTime: TimeInterval) {
 
+        // Called before each frame is rendered
         self.cloudsNode.updateClouds()
 
-        // Called before each frame is rendered
         if let engine = self.engine {
             if engine.gameStarted != false {
                 let remaining = self.engine.gameTimeLeft!

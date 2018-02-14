@@ -13,6 +13,7 @@ class HelpViewController: UIViewController {
     private var rulesLabel: UILabel!
 
     override func loadView() {
+        
         super.loadView()
 
         self.view.backgroundColor = UIColor.white
@@ -50,7 +51,7 @@ class HelpViewController: UIViewController {
             self.rulesLabel.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10),
             self.rulesLabel.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -10),
             self.rulesLabel.bottomAnchor.constraintLessThanOrEqualToSystemSpacingBelow(guide.bottomAnchor, multiplier: 1.0)
-            ])
+        ])
     }
 
     override func viewDidLoad() {

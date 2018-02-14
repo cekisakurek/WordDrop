@@ -15,10 +15,12 @@ class WordDropNode : SKShapeNode {
     private var radius : CGFloat!
 
     override init() {
+
         super.init()
     }
 
     required init?(coder aDecoder: NSCoder) {
+        
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -29,12 +31,12 @@ class WordDropNode : SKShapeNode {
         self.init(path: path, centered: true)
 
         self.isAccessibilityElement = true
-
         self.radius = r
         self.position = position;
         self.lineCap = .round
         self.lineJoin = .round
         self.lineWidth = 12.0
+        self.fillColor = UIColor.white
 
         self.physicsBody = SKPhysicsBody(circleOfRadius: r)
         self.physicsBody?.mass = 1
@@ -44,8 +46,6 @@ class WordDropNode : SKShapeNode {
         self.physicsBody?.restitution = 0.0
         self.physicsBody!.contactTestBitMask = self.physicsBody!.collisionBitMask
 
-        self.fillColor = UIColor.white
-
         let wordLabel = SKLabelNode(text: word)
         wordLabel.position = CGPoint(x:0,y:0)
         wordLabel.horizontalAlignmentMode = .center;
@@ -53,7 +53,7 @@ class WordDropNode : SKShapeNode {
         wordLabel.fontName = "Helvetica"
 
         let scalingFactor = (r*2) / wordLabel.frame.width
-        // Change the fontSize.
+        // Change the fontSize to fit.
         wordLabel.fontSize *= min(scalingFactor,1.0)
         wordLabel.fontColor = UIColor.black
         self.addChild(wordLabel)
