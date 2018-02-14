@@ -34,21 +34,24 @@ enum BodyCategory: UInt32 {
     case MissBody = 8
 }
 
-class GameScene: SKScene, SKPhysicsContactDelegate, GameEngineDelegate {
+class GameScene: SKScene, SKPhysicsContactDelegate, GameEngineDelegate, GameStartDelegate {
 
     private var engine : GameEngineController!
 
     private var scoreLabelNode : SKLabelNode!
     private var gameTimeLabelNode : SKLabelNode!
 
+    private var cloudsNode : CloudsNode!
     private var groundNode : SKSpriteNode!
+    private var countDownNode : CountDownNode!
+    private var helpNode : SKSpriteNode!
+    private var helpButtonNode : SKLabelNode!
 
     private var targetWordNode : SKLabelNode!
-    private var dropWordNode : SKLabelNode!
-    private var decisionLabelNode : SKLabelNode!
+    private var dropWordNode : WordDropNode!
 
-    private var equalBucketNode : SKNode!
-    private var notEqualBucketNode : SKNode!
+    private var equalBucketNode : BucketNode!
+    private var notEqualBucketNode : BucketNode!
 
     private var touchDownPosition : CGPoint?
     private var touchMovedPosition : CGPoint?
@@ -93,7 +96,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GameEngineDelegate {
         self.addChild(self.scoreLabelNode)
 
         self.gameTimeLabelNode = SKLabelNode()
-        self.gameTimeLabelNode.position = CGPoint(x: self.size.width - 70, y: self.size.height - 15)
+        self.gameTimeLabelNode.position = CGPoint(x: self.size.width - 80, y: self.size.height - 15)
         self.gameTimeLabelNode.horizontalAlignmentMode = .left
         self.gameTimeLabelNode.verticalAlignmentMode = .center
         self.gameTimeLabelNode.fontName = "Helvetica-Bold"
@@ -101,6 +104,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GameEngineDelegate {
         self.gameTimeLabelNode.text = "\(NSLocalizedString("Time", comment: "Time")): 00:00"
         self.gameTimeLabelNode.fontColor = UIColor.white
         self.addChild(self.gameTimeLabelNode)
+
+        // add clouds
+        self.cloudsNode = CloudsNode(rect: CGRect(x: 0, y: 0, width: self.size.width, height: 70))
+        self.cloudsNode.position = CGPoint(x: 0, y: self.size.height - 100)
+        self.cloudsNode.addClouds()
+        self.addChild(self.cloudsNode);
 
         self.groundNode = SKSpriteNode()
         self.groundNode.texture = SKTexture(imageNamed: "ground")
@@ -113,36 +122,44 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GameEngineDelegate {
         self.addChild(self.groundNode)
 
         self.targetWordNode = SKLabelNode()
-        self.targetWordNode.position = CGPoint(x: self.size.width / 2.0, y: 50 + self.groundNode.size.height)
+        self.targetWordNode.position = CGPoint(x: self.size.width / 2.0, y: self.size.height - 80)
         self.targetWordNode.fontName = "Helvetica-Bold"
         self.targetWordNode.fontSize = 20
         self.targetWordNode.fontColor = UIColor.black
         self.addChild(self.targetWordNode)
 
-        self.decisionLabelNode = SKLabelNode()
-        self.decisionLabelNode.position = CGPoint(x: self.size.width / 2.0, y: 10 + self.groundNode.size.height)
-        self.decisionLabelNode.fontName = "Helvetica-Bold"
-        self.decisionLabelNode.fontSize = 20
-        self.decisionLabelNode.fontColor = UIColor.black
-        self.addChild(self.decisionLabelNode)
-
-        self.notEqualBucketNode = SKShapeNode(rect: CGRect(x: 0, y:self.groundNode.size.height, width: 100, height: 100))
-        self.notEqualBucketNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 100, height: 100), center: CGPoint(x: 50, y: self.groundNode.size.height + 50))
-        self.notEqualBucketNode.physicsBody?.affectedByGravity = false
-        self.notEqualBucketNode.physicsBody?.isDynamic = false
+        self.notEqualBucketNode = BucketNode(center: CGPoint(x:50, y:50 + self.groundNode.size.height), side: 100, text: "≠")
         self.notEqualBucketNode.physicsBody?.categoryBitMask = BodyCategory.NotEqualBucketBody.rawValue
         self.addChild(self.notEqualBucketNode)
 
-        self.equalBucketNode = SKShapeNode(rect: CGRect(x: self.size.width - 100, y:self.groundNode.size.height, width: 100, height: 100))
-        self.equalBucketNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 100, height: 100), center: CGPoint(x: self.size.width - 50, y: self.groundNode.size.height + 50))
-        self.equalBucketNode.physicsBody?.affectedByGravity = false
-        self.equalBucketNode.physicsBody?.isDynamic = false
+        self.equalBucketNode = BucketNode(center: CGPoint(x:self.size.width - 50, y: 50  + self.groundNode.size.height), side: 100, text: "=")
         self.equalBucketNode.physicsBody?.categoryBitMask = BodyCategory.EqualBucketBody.rawValue
         self.addChild(self.equalBucketNode)
+
+        self.countDownNode = CountDownNode(position: CGPoint(x: self.size.width / 2.0, y: self.size.height / 2.0))
+        self.countDownNode.delegate = self
+        self.countDownNode.horizontalAlignmentMode = .center
+        self.countDownNode.verticalAlignmentMode = .center
+        self.addChild(self.countDownNode)
+
+        self.helpButtonNode = SKLabelNode()
+        self.helpButtonNode.position = CGPoint(x: self.size.width / 2.0, y: (self.size.height / 2.0) - 60)
+        self.helpButtonNode.fontName = "Helvetica-Bold"
+        self.helpButtonNode.fontSize = 30
+        self.helpButtonNode.text = NSLocalizedString("Help", comment: "Help")
+        self.helpButtonNode.fontColor = UIColor.white
+        self.addChild(self.helpButtonNode)
 
         self.engine = GameEngineController()
         self.engine.delegate = self
 
+
+    }
+
+    func startGame() {
+
+        self.countDownNode.isHidden = true
+        self.helpButtonNode.isHidden = true
         if let url = Bundle.main.url(forResource: "words", withExtension: "json") {
             self.engine.startGame(withWordURL: url)
         }
@@ -161,24 +178,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GameEngineDelegate {
             accessibleElements.removeAll()
         }
 
-        self.dropWordNode = SKLabelNode()
-        self.dropWordNode.isAccessibilityElement = true
-        self.dropWordNode.text = withDropWord.text_spa
-        self.dropWordNode.position = CGPoint(x: self.size.width/2.0, y: self.size.height - 130)
+        let startPoint = CGPoint(x: self.size.width/2.0, y: self.size.height - 130)
 
-        self.dropWordNode.physicsBody = SKPhysicsBody(circleOfRadius: 50)
-        self.dropWordNode.physicsBody?.isDynamic = false
-        self.dropWordNode.physicsBody?.mass = 1
-        self.dropWordNode.physicsBody?.affectedByGravity = true
-        self.dropWordNode.physicsBody?.allowsRotation = false
-        self.dropWordNode.physicsBody?.isDynamic = true;
-        self.dropWordNode.physicsBody?.restitution = 0.0
-
+        self.dropWordNode = WordDropNode(word: withDropWord.text_spa, position: startPoint)
         self.dropWordNode.physicsBody?.categoryBitMask = BodyCategory.WordDropBody.rawValue
         self.dropWordNode.physicsBody?.collisionBitMask = BodyCategory.EqualBucketBody.rawValue | BodyCategory.NotEqualBucketBody.rawValue | BodyCategory.MissBody.rawValue
-        self.dropWordNode.physicsBody!.contactTestBitMask = self.dropWordNode.physicsBody!.collisionBitMask
         self.dropWordNode.name = "raindrop"
-
         self.addChild(self.dropWordNode)
 
         // For UI Testing
@@ -194,17 +199,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GameEngineDelegate {
         print("Selected :\(decision) target word:\(targetWord) drop word:\(dropWord) correct:\(correct)")
         self.scoreLabelNode.text = "\(NSLocalizedString("Score", comment: "Score")): \(engine.score)"
 
-        if correct {
-            self.decisionLabelNode.text = "✅"
+        if decision == .Equal {
+            self.equalBucketNode.animateDecision(correct: correct)
         }
-        else {
-            self.decisionLabelNode.text = "❌"
+        else if decision == .NotEqual {
+            self.notEqualBucketNode.animateDecision(correct: correct)
         }
     }
 
     func gameEnded(engine: GameEngineController) {
 
         print("Game ended with score :\(engine.score)")
+        
+        self.countDownNode.isHidden = false
+        self.targetWordNode.text = ""
 
         if let currentDropNode = self.dropWordNode {
             currentDropNode.removeFromParent()
@@ -242,8 +250,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GameEngineDelegate {
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
         let touch = touches.first
         let touchLocation = touch?.location(in: self)
+
+        let touchedNodes = self.nodes(at: touchLocation!)
+        if touchedNodes.first == self.countDownNode {
+            self.countDownNode.startCountDown()
+        }
+        else if touchedNodes.first == self.helpButtonNode {
+            self.showHelp()
+        }
+        else if touchedNodes.first == self.helpNode {
+            self.hideHelp()
+        }
 
         self.touchDownPosition = touchLocation
 
@@ -264,7 +284,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GameEngineDelegate {
 
     func endTouches(_ touches: Set<UITouch>, with event: UIEvent?) {
 
-        if let drop = self.dropWordNode{
+        if let drop = self.dropWordNode {
 
             let touch = touches.first
             let touchLocation = touch?.location(in: self)
@@ -287,6 +307,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GameEngineDelegate {
 
     
     override func update(_ currentTime: TimeInterval) {
+
+        self.cloudsNode.updateClouds()
+
         // Called before each frame is rendered
         if let engine = self.engine {
             if engine.gameStarted != false {
@@ -309,6 +332,46 @@ class GameScene: SKScene, SKPhysicsContactDelegate, GameEngineDelegate {
                 self.gameTimeLabelNode.text = "\(NSLocalizedString("Time", comment: "Time")): \(minutes + ":" + seconds)"
             }
         }
+    }
+
+    func hideHelp() {
+
+        if let node = self.helpNode {
+            self.countDownNode.isHidden = false
+            self.helpButtonNode.isHidden = false
+            node.removeFromParent()
+        }
+    }
+    func showHelp() {
+
+        self.countDownNode.isHidden = true
+
+        self.helpButtonNode.isHidden = true
+
+
+        self.helpNode = SKSpriteNode(color: UIColor.lightGray.withAlphaComponent(0.8), size: CGSize(width: 300, height: 200))
+        self.helpNode.position = CGPoint(x: self.size.width/2.0, y: self.size.height/2.0)
+
+        let helpText = SKLabelNode()
+        helpText.isUserInteractionEnabled = false
+        helpText.position = CGPoint(x: 0, y: 0)
+        helpText.horizontalAlignmentMode = .center
+        helpText.verticalAlignmentMode = .center
+        helpText.preferredMaxLayoutWidth = self.helpNode.size.width - 10
+        helpText.numberOfLines = 0
+        helpText.colorBlendFactor = 0.0;
+//
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+
+        let helpString = NSLocalizedString("It is raining words!\nIf you think dropping word is matching translation then swipe right.\nIf you think we are fooling you swipe left!\n(Tap to close)", comment: "Help text")
+
+        let font = UIFont(name: "Helvetica", size: 18)!
+        let attrString = NSAttributedString(string: helpString, attributes: [.paragraphStyle : paragraph, .font : font])
+        helpText.attributedText =  attrString
+        self.helpNode.addChild(helpText)
+        self.addChild(self.helpNode)
+
     }
 
     // MARK: Helpers

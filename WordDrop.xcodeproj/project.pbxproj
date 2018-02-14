@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CFB2BF492033A7AA009B1CFD /* WordDropNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFB2BF482033A7AA009B1CFD /* WordDropNode.swift */; };
+		CFB2BF4B2033A882009B1CFD /* BucketNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFB2BF4A2033A882009B1CFD /* BucketNode.swift */; };
+		CFB2BF4D2033A9F7009B1CFD /* CloudsNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFB2BF4C2033A9F7009B1CFD /* CloudsNode.swift */; };
+		CFB2BF4F2033AB29009B1CFD /* CountDownNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFB2BF4E2033AB29009B1CFD /* CountDownNode.swift */; };
 		CFF3B5882032665900A165F1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF3B5872032665900A165F1 /* AppDelegate.swift */; };
 		CFF3B58E2032665900A165F1 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF3B58D2032665900A165F1 /* GameScene.swift */; };
 		CFF3B5902032665900A165F1 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF3B58F2032665900A165F1 /* GameViewController.swift */; };
@@ -38,6 +42,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CFB2BF482033A7AA009B1CFD /* WordDropNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordDropNode.swift; sourceTree = "<group>"; };
+		CFB2BF4A2033A882009B1CFD /* BucketNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BucketNode.swift; sourceTree = "<group>"; };
+		CFB2BF4C2033A9F7009B1CFD /* CloudsNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudsNode.swift; sourceTree = "<group>"; };
+		CFB2BF4E2033AB29009B1CFD /* CountDownNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountDownNode.swift; sourceTree = "<group>"; };
 		CFF3B5842032665900A165F1 /* WordDrop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WordDrop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFF3B5872032665900A165F1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CFF3B58D2032665900A165F1 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -82,6 +90,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CFB2BF472033A76F009B1CFD /* Nodes */ = {
+			isa = PBXGroup;
+			children = (
+				CFB2BF482033A7AA009B1CFD /* WordDropNode.swift */,
+				CFB2BF4A2033A882009B1CFD /* BucketNode.swift */,
+				CFB2BF4C2033A9F7009B1CFD /* CloudsNode.swift */,
+				CFB2BF4E2033AB29009B1CFD /* CountDownNode.swift */,
+			);
+			path = Nodes;
+			sourceTree = "<group>";
+		};
 		CFF3B57B2032665900A165F1 = {
 			isa = PBXGroup;
 			children = (
@@ -105,6 +124,7 @@
 		CFF3B5862032665900A165F1 /* WordDrop */ = {
 			isa = PBXGroup;
 			children = (
+				CFB2BF472033A76F009B1CFD /* Nodes */,
 				CFF3B5C12032677400A165F1 /* Engine */,
 				CFF3B5BE2032672E00A165F1 /* Model */,
 				CFF3B5BB203266F200A165F1 /* Resources */,
@@ -297,9 +317,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				CFF3B5C32032677C00A165F1 /* GameEngineController.swift in Sources */,
+				CFB2BF4F2033AB29009B1CFD /* CountDownNode.swift in Sources */,
 				CFF3B58E2032665900A165F1 /* GameScene.swift in Sources */,
+				CFB2BF492033A7AA009B1CFD /* WordDropNode.swift in Sources */,
+				CFB2BF4D2033A9F7009B1CFD /* CloudsNode.swift in Sources */,
 				CFF3B5C02032673500A165F1 /* Word.swift in Sources */,
 				CFF3B5902032665900A165F1 /* GameViewController.swift in Sources */,
+				CFB2BF4B2033A882009B1CFD /* BucketNode.swift in Sources */,
 				CFF3B5882032665900A165F1 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
